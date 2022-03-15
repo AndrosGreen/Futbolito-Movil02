@@ -78,11 +78,16 @@ public class Futbolito extends View implements SensorEventListener {
 
     }
 
-    public void showGoal (){
+    public void showGoal (Boolean side){
+
+        String msg = "Ha marcado gol el equipo ";
+        if(side) msg += "Local";
+        else msg += "Visitante";
+
         AlertDialog.Builder alerta = new AlertDialog.Builder(context);
-        alerta.setMessage("hola mundo")
+        alerta.setMessage(msg)
                 .setCancelable(false)
-                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogo = false;
@@ -110,7 +115,10 @@ public class Futbolito extends View implements SensorEventListener {
 
             if(ejeX >= mitad-40 && ejeX <= mitad+40 && ( ejeY <= 60 || ejeY >= alto-250)){
                 Log.d("fut", "here!  " + ejeX + " " + ejeY);
-                showGoal();
+                if(ejeY <= 60)
+                    showGoal(true);
+                else
+                    showGoal(false);
             }
 
             lienzo.drawText("",ejeX-35,ejeY+3,pincel);
