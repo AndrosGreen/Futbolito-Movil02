@@ -1,9 +1,12 @@
 package com.example.futbolito;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,10 +17,13 @@ import android.view.WindowManager;
 
 public class Futbolito extends View implements SensorEventListener {
 
+    Bitmap background;
     Paint pincel = new Paint();
     int alto, ancho;
     int tamanio = 40;
     int borde = 12;
+
+    Rect rect;
 
     float ejeX=0, ejeY=0, ejeZ=0;
     String X,Y,Z;
@@ -29,8 +35,12 @@ public class Futbolito extends View implements SensorEventListener {
         smAdministrador.registerListener(this, snsRotacion, SensorManager.SENSOR_DELAY_FASTEST);
         Display pantalla = ((WindowManager) getContext() .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 
+        background = BitmapFactory.decodeResource(getResources(), R.drawable.soccer);
+
         ancho = pantalla.getWidth();
         alto = pantalla.getHeight();
+
+        rect = new Rect(0,0,ancho,alto-170);
     }
 
     @Override
@@ -63,10 +73,15 @@ public class Futbolito extends View implements SensorEventListener {
 
     @Override
     public void onDraw(Canvas lienzo){
+
+
+        lienzo.drawBitmap(background,null,rect,null);
+
         pincel.setColor(Color.RED);
         lienzo.drawCircle(ejeX,ejeY, ejeZ+tamanio, pincel);
         pincel.setColor(Color.WHITE);
         pincel.setTextSize(25);
-        lienzo.drawText("hola",ejeX-35,ejeY+3,pincel);
+
+        lienzo.drawText("",ejeX-35,ejeY+3,pincel);
     }
 }
