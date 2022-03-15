@@ -1,6 +1,8 @@
 package com.example.futbolito;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -11,17 +13,21 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 
 public class Futbolito extends View implements SensorEventListener {
 
+    Context context;
     Bitmap background;
     Paint pincel = new Paint();
     int alto, ancho;
     int tamanio = 40;
     int borde = 12;
+
+    Boolean dialogo = false;
 
     Rect rect;
 
@@ -30,6 +36,7 @@ public class Futbolito extends View implements SensorEventListener {
 
     public Futbolito(Context context) {
         super(context);
+        this.context = context;
         SensorManager smAdministrador = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
         Sensor snsRotacion = smAdministrador.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         smAdministrador.registerListener(this, snsRotacion, SensorManager.SENSOR_DELAY_FASTEST);
@@ -71,17 +78,44 @@ public class Futbolito extends View implements SensorEventListener {
 
     }
 
+    public void showGoal (){
+        AlertDialog.Builder alerta = new AlertDialog.Builder(context);
+        alerta.setMessage("hola mundo")
+                .setCancelable(false)
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogo = false;
+                    }
+                });
+        AlertDialog titulo = alerta.create();
+        titulo.setTitle("Goool!");
+        titulo.show();
+
+        dialogo = true;
+    }
+
     @Override
     public void onDraw(Canvas lienzo){
 
+        if(!dialogo){
+            lienzo.drawBitmap(background,null,rect,null);
 
-        lienzo.drawBitmap(background,null,rect,null);
+            pincel.setColor(Color.RED);
+            lienzo.drawCircle(ejeX,ejeY, ejeZ+tamanio, pincel);
+            pincel.setColor(Color.WHITE);
+            pincel.setTextSize(25);
 
-        pincel.setColor(Color.RED);
-        lienzo.drawCircle(ejeX,ejeY, ejeZ+tamanio, pincel);
-        pincel.setColor(Color.WHITE);
-        pincel.setTextSize(25);
+            int mitad = ancho/2;
 
-        lienzo.drawText("",ejeX-35,ejeY+3,pincel);
+            if(ejeX >= mitad-40 && ejeX <= mitad+40 && ( ejeY <= 60 || ejeY >= alto-250)){
+                Log.d("fut", "here!  " + ejeX + " " + ejeY);
+                showGoal();
+            }
+
+            lienzo.drawText("",ejeX-35,ejeY+3,pincel);
+        }
+
+
     }
 }
